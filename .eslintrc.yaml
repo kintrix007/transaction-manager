@@ -2,4 +2,5 @@ extends:
   - next/core-web-vitals
   - eslint:recommended
 rules:
-  quotes: ["error", "double", "avoid-escape"]
+  quotes: [error, double, avoid-escape]
+  semi: [error, always]
