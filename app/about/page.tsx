@@ -83,8 +83,8 @@ export default function About() {
     }
 
     // I do realize working with floats is a terrible idea for precise values,
-    // espectiall when it comes when it comes to currencies.
-    // But a the same time, for this demo it is fine. 
+    // especially when it comes when it comes to currencies.
+    // But at the same time, for this demo it is fine. 
     // (Might change my mind later)
     return <>
         <div>
