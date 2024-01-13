@@ -7,34 +7,43 @@ let id = 0;
 type Transaction = {
     id: number;
     title: string;
+    description?: string;
     amount: string;
 };
 
-function TransactionItem({ title, amount, onClick }: Transaction & { onClick: () => void }) {
+function TransactionItem({ title, description, amount, onClick }: Transaction & { onClick: () => void }) {
     return <li><a onClick={onClick}>
         <div>{title}</div>
+        <div><em>{description ?? "No description"}</em></div>
         <div>€{amount}</div>
     </a></li>;
 }
 
-function TransactionForm({ onAdd }: { onAdd: (title: string, amount: string) => void }) {
+function TransactionForm({ onAdd }: { onAdd: (amount: string, title: string, description?: string) => void }) {
     const [title, setTitle] = useState("");
-    const [amount, setAmount] = useState(0);
+    const [description, setDescription] = useState("");
+    const [amount, setAmount] = useState("");
 
     return <form>
         <label htmlFor="title">Name:
             <input value={title} onChange={e => setTitle(e.target.value)}
                 type="text" name="title" placeholder="Title" />
         </label>
+        <label htmlFor="description">Descroption:
+            <input value={description} onChange={e => setDescription(e.target.value)}
+                type="text" name="description" placeholder="Title" />
+        </label>
         <label htmlFor="amount">€
             <input value={amount} onChange={e => setAmount(e.target.value)}
                 type="number" name="amount" placeholder="Amount" />
         </label>
-        <button type="submit" onClick={(ev) => {
-            ev.preventDefault();
-            onAdd(title, amount.toString());
+        <button type="submit" onClick={e => {
+            e.preventDefault();
+            if (title === "") return;
+
+            onAdd(amount.toString(), title, description);
             setTitle("");
-            setAmount(0);
+            setAmount("");
         }}>Add</button>
     </form>;
 }
@@ -47,10 +56,21 @@ export default function About() {
         { id: id++, title: "Idx", amount: "40.0" },
     ]);
 
-    function addTransaction(title: string, amount: string) {
+    function addTransaction(amount: string, title: string, description?: string) {
         setTransactions(oldTransactions => {
-            const newTransaction = { id: id++, title, amount };
+            const newTransaction = { id: id++, title, description, amount };
             return [...oldTransactions, newTransaction];
+        });
+    }
+
+    function editTransaction(id: number, amount: string, title: string, description?: string) {
+        setTransactions(oldTransactions => {
+            return oldTransactions.map(t => {
+                if (t.id === id) {
+                    return t;
+                }
+                return { ...t, title, description, amount };
+            });
         });
     }
 
