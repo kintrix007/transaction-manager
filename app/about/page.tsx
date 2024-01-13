@@ -1,5 +1,3 @@
-"use client";
-
 import TransactionList from "@/components/transactionList";
 
 function Panel({ children }: { children: React.ReactNode }) {
