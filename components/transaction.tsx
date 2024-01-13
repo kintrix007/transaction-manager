@@ -25,7 +25,7 @@ export function TransactionForm({ onAdd }: { onAdd: (amount: string, title: stri
             <input value={title} onChange={e => setTitle(e.target.value)}
                 type="text" name="title" placeholder="Title" />
         </label>
-        <label htmlFor="description">Descroption:
+        <label htmlFor="description">Description:
             <input value={description} onChange={e => setDescription(e.target.value)}
                 type="text" name="description" placeholder="Title" />
         </label>
@@ -35,10 +35,13 @@ export function TransactionForm({ onAdd }: { onAdd: (amount: string, title: stri
         </label>
         <button type="submit" onClick={e => {
             e.preventDefault();
-            if (title === "") return;
+            const trimmedTitle = title.trim();
+            if (trimmedTitle === "") return;
+            const trimmedDescription = title.trim() || undefined;
 
-            onAdd(amount.toString(), title, description);
+            onAdd(amount.toString(), trimmedTitle, trimmedDescription);
             setTitle("");
+            setDescription("");
             setAmount("");
         }}>Add</button>
     </form>;
