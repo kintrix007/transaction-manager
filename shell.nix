@@ -6,6 +6,7 @@ in
 pkgs.mkShell {
   nativeBuildInputs = with pkgs; [
     nodePackages.typescript-language-server
+    supabase-cli
   ];
 
   buildInputs = with pkgs; [
