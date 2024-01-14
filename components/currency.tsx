@@ -1,3 +1,5 @@
+import styles from "./transaction.module.scss";
+
 export function Currency({ amount }: { amount: number }) {
-    return <>€{amount.toFixed(2)}</>;
+    return <span>€{amount.toFixed(2)}</span>;
 }

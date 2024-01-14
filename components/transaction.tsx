@@ -1,54 +1,38 @@
-import { useState } from "react";
 import { Currency } from "./currency";
+import styles from "./transaction.module.scss";
 
 export type Transaction = {
     id: number;
     title: string;
     description: string | null | undefined;
     amount: number;
+    selected?: boolean;
 };
 
-export function TransactionItem({ title, description, amount, onClick }: Transaction & { onClick: () => void }) {
-    return <li><a onClick={onClick}>
-        <div>{title}</div>
-        <div><em>{description || "No description"}</em></div>
-        <div><Currency amount={amount} /></div>
-    </a></li>;
+export function TransactionItem(
+    {
+        title, description, amount, selected,
+        onSelect, onDelete, onEdit
+    }: Transaction & {
+        onSelect: () => void, onDelete: () => void, onEdit: () => void
+    }
+) {
+    const descriptionText = description || "No description";
+    return <li className={styles.transaction}>
+        <a onClick={onSelect} className={selected ? styles.selected : undefined}>
+            <div className={styles.leftSide}>
+                <div>{title}</div>
+                <div title={descriptionText} className={!description ? styles.empty : undefined}><em>{descriptionText}</em></div>
+            </div>
+            <div className={styles.rightSide}>
+                <Currency amount={amount} />
+                {selected
+                    ? <>
+                        <button onClick={onEdit} className="btn-danger btn">✏️</button>
+                        <button onClick={onDelete} className="btn-danger btn">🗑</button>
+                    </>
+                    : null}
+            </div>
+        </a>
+    </li>;
 }
-
-export function TransactionForm({ onAdd }: { onAdd: (amount: number, title: string, description?: string) => void }) {
-    const [title, setTitle] = useState("");
-    const [description, setDescription] = useState("");
-    const [amount, setAmount] = useState("");
-
-    return <form>
-        <h3>Add a new transaction</h3>
-        <label htmlFor="title">Name:
-            <input value={title} onChange={e => setTitle(e.target.value)}
-                type="text" name="title" placeholder="Title" required />
-        </label>
-        <label htmlFor="description">Description:
-            <input value={description} onChange={e => setDescription(e.target.value)}
-                type="text" name="description" placeholder="Title" />
-        </label>
-        <label htmlFor="amount">€
-            <input value={amount} onChange={e => setAmount(e.target.value)}
-                type="number" name="amount" placeholder="Amount" required />
-        </label>
-
-        <button type="submit" onClick={e => {
-            e.preventDefault();
-            const trimmedTitle = title.trim();
-            if (trimmedTitle === "") return;
-            const numAmount = +amount;
-            if (amount == "" || isNaN(numAmount)) return;
-            const trimmedDescription = description.trim() || undefined;
-
-            onAdd(numAmount, trimmedTitle, trimmedDescription);
-            setTitle("");
-            setDescription("");
-            setAmount("");
-        }}>Add</button>
-    </form>;
-}
-

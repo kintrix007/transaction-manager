@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Transaction, TransactionForm, TransactionItem } from "./transaction";
+import { Transaction, TransactionItem } from "./transaction";
+import { TransactionForm } from "./transactionForm";
 import { createClient } from "@/utils/supabase/client";
 import styles from "./transaction.module.scss";
 import { Currency } from "./currency";
@@ -75,6 +76,14 @@ export default function TransactionList() {
         });
     }
 
+    function selectTransaction(id: number) {
+        setTransactions(oldTransactions => {
+            return oldTransactions.map(t => {
+                return { ...t, selected: t.id == id };
+            });
+        });
+    }
+
     // I do realize working with floats is a terrible idea for precise values,
     // especially when it comes when it comes to currencies.
     // But at the same time, for this demo it is fine. 
@@ -99,7 +108,11 @@ export default function TransactionList() {
             <ul>
                 {loaded
                     ? transactions.map(t =>
-                        <TransactionItem key={t.id} onClick={() => removeTransaction(t.id)} {...t} />)
+                        <TransactionItem key={t.id}
+                            onSelect={() => selectTransaction(t.id)}
+                            onEdit={() => { }}
+                            onDelete={() => removeTransaction(t.id)}
+                            {...t} />)
                     : <div><em>Loading...</em></div>}
             </ul>
         </div >
