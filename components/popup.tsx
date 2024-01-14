@@ -1,6 +1,6 @@
 import { ReactNode } from "react";
 
-export function Popup({ children }: { children: ReactNode }) {
+export function Popup({ title, children }: { title: string, children: ReactNode }) {
     return <div>
         {children}
     </div>;

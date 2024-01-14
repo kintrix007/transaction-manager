@@ -20,7 +20,10 @@ export function TransactionItem(
 ) {
     const descriptionText = description || "No description";
     return <li className={styles.transaction}>
-        <a onClick={onSelect} className={selected ? styles.selected : undefined}>
+        <a onClick={e => {
+            e.stopPropagation();
+            onSelect();
+        }} className={selected ? styles.selected : undefined}>
             <div className={styles.leftSide}>
                 <div className={styles.title}>{title}</div>
                 <div title={descriptionText} className={!description ? styles.empty : undefined}>
@@ -34,8 +37,14 @@ export function TransactionItem(
                 <Currency amount={amount} />
                 {selected
                     ? <>
-                        <button onClick={onEdit} className="btn-danger btn">✏️</button>
-                        <button onClick={onDelete} className="btn-danger btn">🗑</button>
+                        <button onClick={e => {
+                            e.stopPropagation();
+                            onEdit();
+                        }} className="btn-danger btn">✏️</button>
+                        <button onClick={e => {
+                            e.stopPropagation();
+                            onDelete();
+                        }} className="btn-danger btn">🗑</button>
                     </>
                     : null}
             </div>

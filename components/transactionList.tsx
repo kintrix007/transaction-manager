@@ -104,11 +104,23 @@ export default function TransactionList() {
             </div>
         </h2>
 
-        <TransactionForm onSubmit={addTransaction} />
+        {
+            // This is a temporary hack. It should have its own state
+            // and be an actual popup. It should show up when the user
+            // clicks on the "Add transaction" button.
+            //
+            // However, this works for the sake of the demo.
+            !editing
+                ?
+                <Popup title="Add new transaction ➕">
+                    <TransactionForm onSubmit={addTransaction} />
+                </Popup>
+                : null
+        }
 
         {
             editing
-                ? <Popup>
+                ? <Popup title="Edit transaction ✏️">
                     <TransactionForm
                         transaction={editing}
                         onSubmit={newTransaction => {
@@ -125,9 +137,15 @@ export default function TransactionList() {
                 {loaded
                     ? transactions.map(t =>
                         <TransactionItem key={t.id}
-                            onSelect={() => selectTransaction(t.id)}
+                            onSelect={() => {
+                                setEditing(undefined);
+                                selectTransaction(t.id)
+                            }}
                             onEdit={() => setEditing(transactions.find(t => t.selected))}
-                            onDelete={() => removeTransaction(t.id)}
+                            onDelete={() => {
+                                setEditing(undefined);
+                                removeTransaction(t.id)
+                            }}
                             {...t} />)
                     : <div><em>Loading...</em></div>}
             </ul>
