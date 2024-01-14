@@ -61,6 +61,7 @@ export function TransactionForm({ transaction, onSubmit }: { transaction?: Omit<
 
         <button type="submit" onClick={e => {
             e.preventDefault();
+            e.stopPropagation();
             submit();
         }}>
             {transaction === undefined ? "Add" : "Save"}
