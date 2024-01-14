@@ -139,12 +139,15 @@ export default function TransactionList() {
                         <TransactionItem key={t.id}
                             onSelect={() => {
                                 setEditing(undefined);
-                                selectTransaction(t.id)
+                                selectTransaction(t.id);
                             }}
-                            onEdit={() => setEditing(transactions.find(t => t.selected))}
+                            onEdit={() => setEditing(!editing
+                                ? transactions.find(t => t.selected)
+                                : undefined)
+                            }
                             onDelete={() => {
                                 setEditing(undefined);
-                                removeTransaction(t.id)
+                                removeTransaction(t.id);
                             }}
                             {...t} />)
                     : <div><em>Loading...</em></div>}
