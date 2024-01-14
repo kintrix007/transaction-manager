@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Currency } from "./currency";
 
 export type Transaction = {
     id: number;
@@ -11,7 +12,7 @@ export function TransactionItem({ title, description, amount, onClick }: Transac
     return <li><a onClick={onClick}>
         <div>{title}</div>
         <div><em>{description || "No description"}</em></div>
-        <div>€{amount}</div>
+        <div><Currency amount={amount} /></div>
     </a></li>;
 }
 
@@ -21,6 +22,7 @@ export function TransactionForm({ onAdd }: { onAdd: (amount: number, title: stri
     const [amount, setAmount] = useState("");
 
     return <form>
+        <h3>Add a new transaction</h3>
         <label htmlFor="title">Name:
             <input value={title} onChange={e => setTitle(e.target.value)}
                 type="text" name="title" placeholder="Title" required />

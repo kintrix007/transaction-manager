@@ -3,7 +3,8 @@
 import { useEffect, useState } from "react";
 import { Transaction, TransactionForm, TransactionItem } from "./transaction";
 import { createClient } from "@/utils/supabase/client";
-import { Database } from "@/types/supabase";
+import styles from "./transaction.module.scss";
+import { Currency } from "./currency";
 
 export default function TransactionList() {
     const supabase = createClient();
@@ -22,11 +23,23 @@ export default function TransactionList() {
         })();
     }, []);
 
+    const channels = supabase.channel('custom-all-channel')
+        .on(
+            'postgres_changes',
+            { event: '*', schema: 'public', table: 'transactions' },
+            (payload) => {
+                console.log('Change received!', payload)
+            }
+        )
+        .subscribe()
+
     async function addTransaction(amount: number, title: string, description?: string) {
         const { data, error } = await supabase
             .from("transactions")
             .insert({ title, description, amount })
             .select();
+
+        console.log({ amount, title, description });
 
         setTransactions(oldTransactions => {
             const newTransaction = { id: data![0]!.id, title, description, amount };
@@ -67,12 +80,17 @@ export default function TransactionList() {
     // But at the same time, for this demo it is fine. 
     // (Might change my mind later)
     return <>
-        {loaded
-            ? <div>
-                €{transactions.map(t => t.amount).reduce((a, b) => a + b, 0)}
+        <h2 className={styles.balance}>
+            <div className={styles.title}>EUR Balance</div>
+
+            <div>
+                {loaded
+                    ? <Currency amount={transactions
+                        .map(t => t.amount).reduce((a, b) => a + b, 0)} />
+                    : `Loading...`
+                }
             </div>
-            : <div><em>Loading total...</em></div>
-        }
+        </h2>
 
         <TransactionForm onAdd={addTransaction} />
 
