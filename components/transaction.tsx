@@ -22,8 +22,13 @@ export function TransactionItem(
     return <li className={styles.transaction}>
         <a onClick={onSelect} className={selected ? styles.selected : undefined}>
             <div className={styles.leftSide}>
-                <div>{title}</div>
-                <div title={descriptionText} className={!description ? styles.empty : undefined}><em>{descriptionText}</em></div>
+                <div className={styles.title}>{title}</div>
+                <div title={descriptionText} className={!description ? styles.empty : undefined}>
+                    {descriptionText}
+                </div>
+                <div title={date.toDateString()} className={styles.date}>
+                    📅 {date.toLocaleDateString()}
+                </div>
             </div>
             <div className={styles.rightSide}>
                 <Currency amount={amount} />
