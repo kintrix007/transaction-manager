@@ -3,15 +3,16 @@ import styles from "./transaction.module.scss";
 
 export type Transaction = {
     id: number;
+    amount: number;
     title: string;
     description: string | null | undefined;
-    amount: number;
+    date: Date;
     selected?: boolean;
 };
 
 export function TransactionItem(
     {
-        title, description, amount, selected,
+        amount, title, description, date, selected,
         onSelect, onDelete, onEdit
     }: Transaction & {
         onSelect: () => void, onDelete: () => void, onEdit: () => void

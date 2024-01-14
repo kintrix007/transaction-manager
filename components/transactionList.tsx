@@ -19,7 +19,10 @@ export default function TransactionList() {
                 .from("transactions")
                 .select();
 
-            setTransactions(data ?? []);
+            const transactions = data
+                ?.map(t => ({ ...t, date: new Date(t.date) })) ?? [];
+
+            setTransactions(transactions);
             setLoaded(true);
         })();
     }, []);
@@ -34,33 +37,32 @@ export default function TransactionList() {
         )
         .subscribe()
 
-    async function addTransaction(amount: number, title: string, description?: string) {
+    async function addTransaction(transaction: Omit<Transaction, "id">) {
         const { data, error } = await supabase
             .from("transactions")
-            .insert({ title, description, amount })
+            .insert({ ...transaction, date: transaction.date.toISOString() })
             .select();
 
-        console.log({ amount, title, description });
-
         setTransactions(oldTransactions => {
-            const newTransaction = { id: data![0]!.id, title, description, amount };
+            const newTransaction = { ...transaction, id: data![0]!.id };
             return [...oldTransactions, newTransaction];
         });
     }
 
-    async function editTransaction(id: number, amount: number, title: string, description?: string) {
+    async function editTransaction(transaction: Transaction) {
+        const editedTransaction = transactions.find(t => t.id === transaction.id)!;
         const { error } = await supabase
             .from("transactions")
-            .update(transactions.find(t => t.id === id)!)
-            .eq("id", id)
+            .update({ ...editedTransaction, date: editedTransaction.date.toISOString() })
+            .eq("id", transaction.id)
             .select();
 
         setTransactions(oldTransactions => {
             return oldTransactions.map(t => {
-                if (t.id === id) {
+                if (t.id !== transaction.id) {
                     return t;
                 }
-                return { ...t, title, description, amount };
+                return { ...t, ...transaction };
             });
         });
     }
