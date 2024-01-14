@@ -28,6 +28,7 @@ export default function TransactionList() {
 
     useEffect(() => {
         (async () => {
+            // TODO: Error handling
             let { data, error } = await supabase
                 .from("transactions")
                 .select();
@@ -74,6 +75,7 @@ export default function TransactionList() {
         .subscribe();
 
     async function addTransaction(transaction: Omit<Transaction, "id">) {
+        // TODO: Error handling
         const { data, error } = await supabase
             .from("transactions")
             .insert({ ...transaction, date: transaction.date.toISOString() })
@@ -86,7 +88,8 @@ export default function TransactionList() {
     }
 
     async function editTransaction(transaction: Transaction) {
-        const { data, error } = await supabase
+        // TODO: Error handling
+        const { error } = await supabase
             .from("transactions")
             .update({ ...transaction, date: transaction.date.toISOString() })
             .eq("id", transaction.id)
@@ -103,6 +106,7 @@ export default function TransactionList() {
     }
 
     async function removeTransaction(id: number) {
+        // TODO: Error handling
         const { error } = await supabase
             .from("transactions")
             .delete()
