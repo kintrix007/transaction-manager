@@ -2,15 +2,22 @@ import { useState } from "react";
 import styles from "./transaction.module.scss";
 import { Transaction } from "./transaction";
 
-function getCurrentDateString() {
-    return new Date().toISOString().split("T")[0]!
+function getDateString(date: Date) {
+    return date.toISOString().split("T")[0];
 }
 
 export function TransactionForm({ transaction, onSubmit }: { transaction?: Omit<Transaction, "id">; onSubmit: (obj: Omit<Transaction, "id">) => void }) {
-    const [amount, setAmount] = useState("0.00");
-    const [title, setTitle] = useState("");
-    const [description, setDescription] = useState("");
-    const [date, setDate] = useState(getCurrentDateString());
+    const defaults = {
+        amount: transaction?.amount.toFixed(2) ?? "0.00",
+        title: transaction?.title ?? "",
+        description: transaction?.description ?? "",
+        date: getDateString(transaction?.date ?? new Date()),
+    };
+
+    const [amount, setAmount] = useState(defaults.amount);
+    const [title, setTitle] = useState(defaults.title);
+    const [description, setDescription] = useState(defaults.description);
+    const [date, setDate] = useState(defaults.date);
 
     function submit() {
         const trimmedTitle = title.trim();
@@ -27,15 +34,14 @@ export function TransactionForm({ transaction, onSubmit }: { transaction?: Omit<
             date: parsedDate,
         });
 
-        setTitle("");
-        setDescription("");
-        setAmount("0.00");
+        setAmount(defaults.amount);
+        setTitle(defaults.title);
+        setDescription(defaults.description);
         // Actually... Don't reset the date. That's annoying.
         // setDate(getCurrentDateString());
     }
 
     return <form className={styles.transactionForm}>
-        <h3>Add a new transaction</h3>
         <label htmlFor="amount">* Total:
             <input className={styles.foo} value={amount} onChange={e => setAmount(e.target.value)}
                 type="number" name="amount" placeholder="Amount" required />

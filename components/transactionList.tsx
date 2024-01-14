@@ -6,12 +6,14 @@ import { TransactionForm } from "./transactionForm";
 import { createClient } from "@/utils/supabase/client";
 import styles from "./transaction.module.scss";
 import { Currency } from "./currency";
+import { Popup } from "./popup";
 
 export default function TransactionList() {
     const supabase = createClient();
 
     const [transactions, setTransactions] = useState<Transaction[]>([]);
     const [loaded, setLoaded] = useState(false);
+    const [editing, setEditing] = useState<Transaction | undefined>(undefined);
 
     useEffect(() => {
         (async () => {
@@ -50,10 +52,9 @@ export default function TransactionList() {
     }
 
     async function editTransaction(transaction: Transaction) {
-        const editedTransaction = transactions.find(t => t.id === transaction.id)!;
-        const { error } = await supabase
+        const { data, error } = await supabase
             .from("transactions")
-            .update({ ...editedTransaction, date: editedTransaction.date.toISOString() })
+            .update({ ...transaction, date: transaction.date.toISOString() })
             .eq("id", transaction.id)
             .select();
 
@@ -105,6 +106,19 @@ export default function TransactionList() {
 
         <TransactionForm onSubmit={addTransaction} />
 
+        {
+            editing
+                ? <Popup>
+                    <TransactionForm
+                        transaction={editing}
+                        onSubmit={newTransaction => {
+                            editTransaction({ ...newTransaction, id: editing.id });
+                            setEditing(undefined);
+                        }} />
+                </Popup>
+                : null
+        }
+
         <div>
             <h2>Past transactions</h2>
             <ul>
@@ -112,7 +126,7 @@ export default function TransactionList() {
                     ? transactions.map(t =>
                         <TransactionItem key={t.id}
                             onSelect={() => selectTransaction(t.id)}
-                            onEdit={() => { }}
+                            onEdit={() => setEditing(transactions.find(t => t.selected))}
                             onDelete={() => removeTransaction(t.id)}
                             {...t} />)
                     : <div><em>Loading...</em></div>}
