@@ -1,26 +1,46 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Transaction, TransactionForm, TransactionItem } from "./transaction";
-
-let id = 0;
+import { createClient } from "@/utils/supabase/client";
+import { Database } from "@/types/supabase";
 
 export default function TransactionList() {
-    const [transactions, setTransactions] = useState<Transaction[]>([
-        { id: id++, title: "Food", amount: "10.0" },
-        { id: id++, title: "Groceries", amount: "20.0" },
-        { id: id++, title: "Entertainment", amount: "30.0" },
-        { id: id++, title: "Idx", amount: "40.0" },
-    ]);
+    const supabase = createClient();
 
-    function addTransaction(amount: string, title: string, description?: string) {
+    const [transactions, setTransactions] = useState<Transaction[]>([]);
+    const [loaded, setLoaded] = useState(false);
+
+    useEffect(() => {
+        (async () => {
+            let { data, error } = await supabase
+                .from("transactions")
+                .select();
+
+            setTransactions(data ?? []);
+            setLoaded(true);
+        })();
+    }, []);
+
+    async function addTransaction(amount: number, title: string, description?: string) {
+        const { data, error } = await supabase
+            .from("transactions")
+            .insert({ title, description, amount })
+            .select();
+
         setTransactions(oldTransactions => {
-            const newTransaction = { id: id++, title, description, amount };
+            const newTransaction = { id: data![0]!.id, title, description, amount };
             return [...oldTransactions, newTransaction];
         });
     }
 
-    function editTransaction(id: number, amount: string, title: string, description?: string) {
+    async function editTransaction(id: number, amount: number, title: string, description?: string) {
+        const { error } = await supabase
+            .from("transactions")
+            .update(transactions.find(t => t.id === id)!)
+            .eq("id", id)
+            .select();
+
         setTransactions(oldTransactions => {
             return oldTransactions.map(t => {
                 if (t.id === id) {
@@ -31,11 +51,14 @@ export default function TransactionList() {
         });
     }
 
-    function removeTransaction(id: number) {
+    async function removeTransaction(id: number) {
+        const { error } = await supabase
+            .from("transactions")
+            .delete()
+            .eq("id", id);
+
         setTransactions(oldTransactions => {
-            const newTransactions = oldTransactions.filter(t => t.id !== id);
-            console.log(newTransactions);
-            return newTransactions;
+            return oldTransactions.filter(t => t.id !== id);
         });
     }
 
@@ -44,17 +67,22 @@ export default function TransactionList() {
     // But at the same time, for this demo it is fine. 
     // (Might change my mind later)
     return <>
-        <div>
-            €{transactions.map(t => t.amount).reduce((a, b) => a + parseFloat(b), 0)}
-        </div>
+        {loaded
+            ? <div>
+                €{transactions.map(t => t.amount).reduce((a, b) => a + b, 0)}
+            </div>
+            : <div><em>Loading total...</em></div>
+        }
 
         <TransactionForm onAdd={addTransaction} />
 
         <div>
-            Past transactions
+            <h2>Past transactions</h2>
             <ul>
-                {transactions.map(t =>
-                    <TransactionItem key={t.id} onClick={() => removeTransaction(t.id)} {...t} />)}
+                {loaded
+                    ? transactions.map(t =>
+                        <TransactionItem key={t.id} onClick={() => removeTransaction(t.id)} {...t} />)
+                    : <div><em>Loading...</em></div>}
             </ul>
         </div >
     </>;
