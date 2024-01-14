@@ -103,7 +103,7 @@ export default function TransactionList() {
             </div>
         </h2>
 
-        <TransactionForm onAdd={addTransaction} />
+        <TransactionForm onSubmit={addTransaction} />
 
         <div>
             <h2>Past transactions</h2>
