@@ -8,6 +8,17 @@ import styles from "./transaction.module.scss";
 import { Currency } from "./currency";
 import { Popup } from "./popup";
 
+function Balance({ transactions }: { transactions: { amount: number }[] }) {
+    return <h2 className={styles.balance}>
+        <div className={styles.title}>EUR Balance</div>
+
+        <div>
+            <Currency amount={transactions
+                .map(t => t.amount).reduce((a, b) => a + b, 0)} />
+        </div>
+    </h2>;
+}
+
 export default function TransactionList() {
     const supabase = createClient();
 
@@ -33,11 +44,34 @@ export default function TransactionList() {
         .on(
             'postgres_changes',
             { event: '*', schema: 'public', table: 'transactions' },
-            (payload) => {
-                console.log('Change received!', payload)
+            (payload: any) => {
+                console.log({ payload });
+                switch (payload.eventType) {
+                    case 'INSERT':
+                        setTransactions(oldTransactions => {
+                            const newTransaction = { ...payload.new, date: new Date(payload.new.date) };
+                            return [...oldTransactions, newTransaction];
+                        });
+                        break;
+                    case 'UPDATE':
+                        setTransactions(oldTransactions => {
+                            return oldTransactions.map(t => {
+                                if (t.id !== payload.old.id) {
+                                    return t;
+                                }
+                                return { ...t, ...payload.new, date: new Date(payload.new.date) };
+                            });
+                        });
+                        break;
+                    case 'DELETE':
+                        setTransactions(oldTransactions => {
+                            return oldTransactions.filter(t => t.id !== payload.old.id);
+                        });
+                        break;
+                }
             }
         )
-        .subscribe()
+        .subscribe();
 
     async function addTransaction(transaction: Omit<Transaction, "id">) {
         const { data, error } = await supabase
@@ -92,17 +126,7 @@ export default function TransactionList() {
     // But at the same time, for this demo it is fine. 
     // (Might change my mind later)
     return <>
-        <h2 className={styles.balance}>
-            <div className={styles.title}>EUR Balance</div>
-
-            <div>
-                {loaded
-                    ? <Currency amount={transactions
-                        .map(t => t.amount).reduce((a, b) => a + b, 0)} />
-                    : `Loading...`
-                }
-            </div>
-        </h2>
+        <Balance transactions={transactions} />
 
         {
             // This is a temporary hack. It should have its own state
@@ -134,23 +158,21 @@ export default function TransactionList() {
         <div>
             <h2>Past transactions</h2>
             <ul>
-                {loaded
-                    ? transactions.map(t =>
-                        <TransactionItem key={t.id}
-                            onSelect={() => {
-                                setEditing(undefined);
-                                selectTransaction(t.id);
-                            }}
-                            onEdit={() => setEditing(!editing
-                                ? transactions.find(t => t.selected)
-                                : undefined)
-                            }
-                            onDelete={() => {
-                                setEditing(undefined);
-                                removeTransaction(t.id);
-                            }}
-                            {...t} />)
-                    : <div><em>Loading...</em></div>}
+                {transactions.map(t =>
+                    <TransactionItem key={t.id}
+                        onSelect={() => {
+                            setEditing(undefined);
+                            selectTransaction(t.id);
+                        }}
+                        onEdit={() => setEditing(!editing
+                            ? transactions.find(t => t.selected)
+                            : undefined)
+                        }
+                        onDelete={() => {
+                            setEditing(undefined);
+                            removeTransaction(t.id);
+                        }}
+                        {...t} />)}
             </ul>
         </div >
     </>;
