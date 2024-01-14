@@ -3,10 +3,6 @@
 # dev environment
 .direnv/
 
-# ? Really not sure if this should be added
-# Supabase config
-supabase/
-
 # dependencies
 /node_modules
 /.pnp
