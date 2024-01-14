@@ -46,7 +46,6 @@ export default function TransactionList() {
             'postgres_changes',
             { event: '*', schema: 'public', table: 'transactions' },
             (payload: any) => {
-                console.log({ payload });
                 switch (payload.eventType) {
                     case 'INSERT':
                         setTransactions(oldTransactions => {
