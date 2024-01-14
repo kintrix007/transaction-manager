@@ -40,7 +40,7 @@ export function TransactionForm({ onAdd }: { onAdd: (amount: number, title: stri
             if (trimmedTitle === "") return;
             const numAmount = +amount;
             if (amount == "" || isNaN(numAmount)) return;
-            const trimmedDescription = title.trim() || undefined;
+            const trimmedDescription = description.trim() || undefined;
 
             onAdd(numAmount, trimmedTitle, trimmedDescription);
             setTitle("");
