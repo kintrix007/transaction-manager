@@ -2,13 +2,14 @@
 
 ## TODOs
 
-- Make the app into a container for easy deployment
-  - Not strictly necessary, but I wanna have a bit of Nix fun
-- Make the popup into an actual popup
-  - Also add a "New" button that shows the popup for creating a new transaction
-- I kinda wanna add options for sorting the transactions -- but alas, no time
+- Remove leftover unused CSS from the Next.js template.
 - Make the layout responsive (the header is broken on mobile)
   - Improve the desktop layout -- it is not great.
+- Make the popup into an actual popup
+- Make the app into a container for easy deployment
+  - Not strictly necessary, but I wanna have a bit of Nix fun
+  - Also add a "New" button that shows the popup for creating a new transaction
+- I kinda wanna add options for sorting the transactions -- but alas, no time
 
 ## Set up Supabase
 
