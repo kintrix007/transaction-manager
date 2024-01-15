@@ -7,6 +7,7 @@ pkgs.mkShell {
   nativeBuildInputs = with pkgs; [
     nodePackages.typescript-language-server
     supabase-cli
+    netlify-cli
   ];
 
   buildInputs = with pkgs; [
