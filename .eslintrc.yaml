@@ -4,3 +4,4 @@ extends:
 rules:
   quotes: [error, double, avoid-escape]
   semi: [error, always]
+  no-unused-vars: warn
