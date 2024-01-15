@@ -23,18 +23,31 @@ export default function TransactionList() {
     const supabase = createClient();
 
     const [transactions, setTransactions] = useState<Transaction[]>([]);
+    // In case we want to do something with it
     const [loaded, setLoaded] = useState(false);
     const [editing, setEditing] = useState<Transaction | undefined>(undefined);
 
     useEffect(() => {
         (async () => {
             // TODO: Error handling
-            let { data, error } = await supabase
+            let { data, error, status, statusText } = await supabase
                 .from("transactions")
                 .select();
 
-            const transactions = data
-                ?.map(t => ({ ...t, date: new Date(t.date) })) ?? [];
+            if (error) {
+                // Crude, but gets the point across
+                alert(error.message);
+                return;
+            }
+
+            if (!status.toString().startsWith("2")) {
+                // Crude, but gets the point across
+                alert(`Error: ${status} ${statusText}`);
+                return;
+            }
+
+            const transactions = data!
+                .map(t => ({ ...t, date: new Date(t.date) })) ?? [];
 
             setTransactions(transactions);
             setLoaded(true);
@@ -74,14 +87,19 @@ export default function TransactionList() {
         .subscribe();
 
     async function addTransaction(transaction: Omit<Transaction, "id">) {
-        // TODO: Error handling
         const { data, error } = await supabase
             .from("transactions")
             .insert({ ...transaction, date: transaction.date.toISOString() })
             .select();
 
+        if (error) {
+            // Crude, but gets the point across
+            alert(error.message);
+            return;
+        }
+
         setTransactions(oldTransactions => {
-            const newTransaction = { ...transaction, id: data![0]!.id };
+            const newTransaction = { ...transaction, id: data[0].id };
             return [...oldTransactions, newTransaction];
         });
     }
@@ -93,6 +111,12 @@ export default function TransactionList() {
             .update({ ...transaction, date: transaction.date.toISOString() })
             .eq("id", transaction.id)
             .select();
+
+        if (error) {
+            // Crude, but gets the point across
+            alert(error.message);
+            return;
+        }
 
         setTransactions(oldTransactions => {
             return oldTransactions.map(t => {
@@ -110,6 +134,12 @@ export default function TransactionList() {
             .from("transactions")
             .delete()
             .eq("id", id);
+
+        if (error) {
+            // Crude, but gets the point across
+            alert(error.message);
+            return;
+        }
 
         setTransactions(oldTransactions => {
             return oldTransactions.filter(t => t.id !== id);

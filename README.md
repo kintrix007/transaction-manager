@@ -2,7 +2,6 @@
 
 ## TODOs
 
-- Proper error handling for db actions
 - Write setup instructions, e.g. how to set up Supabase etc...
 - Make the app into a container for easy deployment
   - Not strictly necessary, but I wanna have a bit of Nix fun
