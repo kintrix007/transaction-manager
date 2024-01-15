@@ -52,21 +52,21 @@ export default function TransactionList() {
             setTransactions(transactions);
             setLoaded(true);
         })();
-    }, []);
+    }, [supabase]);
 
-    const channels = supabase.channel('custom-all-channel')
+    const channels = supabase.channel("custom-all-channel")
         .on(
-            'postgres_changes',
-            { event: '*', schema: 'public', table: 'transactions' },
+            "postgres_changes",
+            { event: "*", schema: "public", table: "transactions" },
             (payload: any) => {
                 switch (payload.eventType) {
-                    case 'INSERT':
+                    case "INSERT":
                         setTransactions(oldTransactions => {
                             const newTransaction = { ...payload.new, date: new Date(payload.new.date) };
                             return [...oldTransactions, newTransaction];
                         });
                         break;
-                    case 'UPDATE':
+                    case "UPDATE":
                         setTransactions(oldTransactions => {
                             return oldTransactions.map(t => {
                                 if (t.id !== payload.old.id) {
@@ -76,7 +76,7 @@ export default function TransactionList() {
                             });
                         });
                         break;
-                    case 'DELETE':
+                    case "DELETE":
                         setTransactions(oldTransactions => {
                             return oldTransactions.filter(t => t.id !== payload.old.id);
                         });

@@ -6,7 +6,10 @@ function getDateString(date: Date) {
     return date.toISOString().split("T")[0];
 }
 
-export function TransactionForm({ transaction, onSubmit }: { transaction?: Omit<Transaction, "id">; onSubmit: (obj: Omit<Transaction, "id">) => void }) {
+export function TransactionForm({ transaction, onSubmit }: {
+    transaction?: Omit<Transaction, "id">;
+    onSubmit: (obj: Omit<Transaction, "id">) => void;
+}) {
     const defaults = {
         amount: transaction?.amount.toFixed(2) ?? "0.00",
         title: transaction?.title ?? "",

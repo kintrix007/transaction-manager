@@ -24,7 +24,7 @@ function Header() {
                 </li>
             </ul>
         </nav>
-    </header>
+    </header>;
 }
 
 export default function App() {
