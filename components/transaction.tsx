@@ -22,10 +22,14 @@ export function TransactionItem(
 ) {
     const descriptionText = description || "No description";
     return <li className={styles.transaction}>
+        {
+            // Yes, I do realize this has no business being an achor tag.
+            // But changing it to a div breaks the styles.
+        }
         <a onClick={e => {
             e.stopPropagation();
             onSelect?.();
-        }} className={selected ? styles.selected : undefined}>
+        }} id={selected ? "selected-transaction" : undefined} className={selected ? styles.selected : undefined}>
             <div className={styles.leftSide}>
                 <div className={styles.title}>{title}</div>
                 <div title={descriptionText} className={`${styles.description} ${!description ? styles.empty : undefined}`}>

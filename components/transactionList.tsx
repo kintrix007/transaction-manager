@@ -1,22 +1,32 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { RefObject, useEffect, useRef, useState } from "react";
 import { Transaction, TransactionItem } from "./transaction";
 import { TransactionForm } from "./transactionForm";
 import { createClient } from "@/utils/supabase/client";
-import styles from "./transaction.module.scss";
-import { Currency } from "./currency";
+import { Balance } from "./balance";
 import { Popup } from "./popup";
 
-function Balance({ transactions }: { transactions: { amount: number }[] }) {
-    return <h2 className={styles.balance}>
-        <div className={styles.title}>EUR Balance</div>
+function detectClickOutside(id: string, onClickOutside: () => void) {
+    useEffect(() => {
+        function handleClick(e: MouseEvent) {
+            const element = document.getElementById(id);
+            console.log({ element });
+            console.log({ srcElement: e.srcElement });
+            console.log({ contains: element?.contains(e.srcElement as Node) });
 
-        <div>
-            <Currency amount={transactions
-                .map(t => t.amount).reduce((a, b) => a + b, 0)} />
-        </div>
-    </h2>;
+            if (element?.contains(e.srcElement as Node)) {
+                return;
+            }
+
+            onClickOutside();
+        }
+
+        document.addEventListener("mousedown", handleClick);
+        return () => {
+            document.removeEventListener("mousedown", handleClick);
+        };
+    });
 }
 
 export default function TransactionList() {
@@ -28,6 +38,10 @@ export default function TransactionList() {
     const [editing, setEditing] = useState<Transaction | undefined>(undefined);
     const [selected, setSelected] = useState<Transaction["id"] | undefined>(undefined);
     const selectedTransaction = useRef<HTMLElement | null>(null);
+
+    detectClickOutside("selected-transaction", () => {
+        setSelected(undefined)
+    });
 
     useEffect(() => {
         (async () => {
@@ -87,19 +101,6 @@ export default function TransactionList() {
         )
         .subscribe();
 
-    useEffect(() => {
-        function handleClick(e: MouseEvent) {
-            if (!selectedTransaction.current?.contains(e.target as Node)) {
-                return;
-            }
-            setSelected(undefined);
-        }
-
-        document.addEventListener("mousedown", handleClick);
-        return () => {
-            document.removeEventListener("mousedown", handleClick);
-        };
-    }, [selectedTransaction]);
 
     async function addTransaction(transaction: Omit<Transaction, "id">) {
         const { data, error } = await supabase
@@ -214,10 +215,9 @@ export default function TransactionList() {
                             setEditing(undefined);
                             removeTransaction(t.id);
                         }}
-                        {...selected === t.id ? { ref: selectedTransaction } : {}}
                         selected={t.id === selected}
                         {...t} />)}
             </ul>
-        </div >
+        </div>
     </>;
 }
