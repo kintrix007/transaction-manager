@@ -4,10 +4,10 @@
     overflow-x: hidden;
 
     padding: 1em;
-    background: #222;
+    background: rgb(var(--secondary-accent-rgb));
 
     border-radius: 1em;
-    border: 2px solid #666;
+    border: 2px solid rgb(var(--button-rgb));
 
     display: flex;
     flex-direction: column;
@@ -65,12 +65,12 @@
         overflow-x: hidden;
 
         &:hover {
-            background-color: #fff2;
+            background-color: rgba(var(--foreground-rgb), 0.1);
         }
 
         &.selected {
             border-color: #aaf;
-            background-color: #fff2;
+            background-color: rgba(var(--foreground-rgb), 0.1);
         }
     }
 

@@ -1,5 +1,5 @@
 .mainHeader {
-    background-color: #333;
+    background-color: rgb(var(--primary-accent-rgb));
 
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -35,7 +35,6 @@
         align-items: center;
         height: 100%;
         gap: 2em;
-
     }
 
     li {
@@ -54,8 +53,8 @@
             transition: background 0.2s ease-in;
 
             &:hover {
-                background-color: #fff4;
-                border-bottom: 2px solid #fff;
+                background-color: rgb(var(--secondary-accent-rgb));
+                border-bottom: 2px solid rgb(var(--foreground-rgb));
                 border-top: 2px solid #0000;
             }
         }
@@ -63,7 +62,7 @@
 }
 
 .active {
-    border-bottom: 2px solid #fff;
+    border-bottom: 2px solid rgb(var(--foreground-rgb));
 }
 
 .mainContent {
@@ -73,7 +72,7 @@
 
     display: flex;
     justify-content: center;
-    background-color: #333;
+    background-color: rgb(var(--background-end-rgb));
 }
 
 @media (max-width: 768px) {

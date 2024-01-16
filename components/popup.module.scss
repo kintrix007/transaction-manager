@@ -15,7 +15,7 @@
         justify-content: center;
         align-items: center;
 
-        background: #222;
+        background: rgb(var(--secondary-accent-rgb));
         border-radius: 1em;
 
         &>h3 {
