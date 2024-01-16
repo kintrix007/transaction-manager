@@ -9,7 +9,9 @@ export function Popup(
     }
 ) {
     return <div className={styles.popup}>
-        <h3>{title}</h3>
-        {children}
+        <div className={styles.content}>
+            <h3>{title}</h3>
+            {children}
+        </div>
     </div>;
 }

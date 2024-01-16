@@ -26,7 +26,7 @@ export function TransactionItem(
         }} className={selected ? styles.selected : undefined}>
             <div className={styles.leftSide}>
                 <div className={styles.title}>{title}</div>
-                <div title={descriptionText} className={!description ? styles.empty : undefined}>
+                <div title={descriptionText} className={`${styles.description} ${!description ? styles.empty : undefined}`}>
                     {descriptionText}
                 </div>
                 <div title={date.toDateString()} className={styles.date}>

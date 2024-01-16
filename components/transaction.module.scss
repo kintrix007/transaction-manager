@@ -48,7 +48,7 @@
 
 .transaction {
     list-style-type: none;
-    width: 23em;
+    width: 35em;
     overflow-wrap: none;
     white-space: nowrap;
 
@@ -102,6 +102,21 @@
         display: flex;
         justify-content: center;
         align-items: center;
+    }
+}
+
+@media (max-width: 768px) {
+    .transaction {
+        width: 90vw;
+
+        .leftSide {
+            white-space: normal;
+
+            .description {
+                max-height: 2.5em;
+                overflow-y: hidden;
+            }
+        }
     }
 }
 
