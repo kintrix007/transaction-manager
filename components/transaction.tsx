@@ -7,7 +7,6 @@ export type Transaction = {
     title: string;
     description: string | null | undefined;
     date: Date;
-    selected?: boolean;
 };
 
 export function TransactionItem(
@@ -15,7 +14,10 @@ export function TransactionItem(
         amount, title, description, date, selected,
         onSelect, onDelete, onEdit
     }: Transaction & {
-        onSelect?: () => void, onDelete?: () => void, onEdit?: () => void
+        selected?: boolean;
+        onSelect?: () => void;
+        onDelete?: () => void;
+        onEdit?: () => void;
     }
 ) {
     const descriptionText = description || "No description";

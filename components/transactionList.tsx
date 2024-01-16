@@ -26,6 +26,7 @@ export default function TransactionList() {
     // In case we want to do something with it
     const [loaded, setLoaded] = useState(false);
     const [editing, setEditing] = useState<Transaction | undefined>(undefined);
+    const [selected, setSelected] = useState<Transaction["id"] | undefined>(undefined);
 
     useEffect(() => {
         (async () => {
@@ -85,6 +86,17 @@ export default function TransactionList() {
         )
         .subscribe();
 
+    useEffect(() => {
+        function handleClick(e: MouseEvent) {
+            setSelected(undefined);
+        }
+
+        document.addEventListener("mousedown", handleClick);
+        return () => {
+            document.removeEventListener("mousedown", handleClick);
+        };
+    }, [transactions]);
+
     async function addTransaction(transaction: Omit<Transaction, "id">) {
         const { data, error } = await supabase
             .from("transactions")
@@ -143,12 +155,8 @@ export default function TransactionList() {
         });
     }
 
-    function selectTransaction(id: number) {
-        setTransactions(oldTransactions => {
-            return oldTransactions.map(t => {
-                return { ...t, selected: t.id == id };
-            });
-        });
+    function selectTransaction(id: number | undefined) {
+        setSelected(id);
     }
 
     // I do realize working with floats is a terrible idea for precise values,
@@ -191,17 +199,18 @@ export default function TransactionList() {
                 {transactions.map(t =>
                     <TransactionItem key={t.id}
                         onSelect={() => {
+                            setSelected(t.id);
                             setEditing(undefined);
-                            selectTransaction(t.id);
                         }}
                         onEdit={() => setEditing(!editing
-                            ? transactions.find(t => t.selected)
+                            ? transactions.find(t => t.id === selected)
                             : undefined)
                         }
                         onDelete={() => {
                             setEditing(undefined);
                             removeTransaction(t.id);
                         }}
+                        selected={t.id === selected}
                         {...t} />)}
             </ul>
         </div >
