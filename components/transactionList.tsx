@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Transaction, TransactionItem } from "./transaction";
 import { TransactionForm } from "./transactionForm";
 import { createClient } from "@/utils/supabase/client";
@@ -27,6 +27,7 @@ export default function TransactionList() {
     const [loaded, setLoaded] = useState(false);
     const [editing, setEditing] = useState<Transaction | undefined>(undefined);
     const [selected, setSelected] = useState<Transaction["id"] | undefined>(undefined);
+    const selectedTransaction = useRef<HTMLElement | null>(null);
 
     useEffect(() => {
         (async () => {
@@ -88,6 +89,9 @@ export default function TransactionList() {
 
     useEffect(() => {
         function handleClick(e: MouseEvent) {
+            if (!selectedTransaction.current?.contains(e.target as Node)) {
+                return;
+            }
             setSelected(undefined);
         }
 
@@ -95,7 +99,7 @@ export default function TransactionList() {
         return () => {
             document.removeEventListener("mousedown", handleClick);
         };
-    }, [transactions]);
+    }, [selectedTransaction]);
 
     async function addTransaction(transaction: Omit<Transaction, "id">) {
         const { data, error } = await supabase
@@ -210,6 +214,7 @@ export default function TransactionList() {
                             setEditing(undefined);
                             removeTransaction(t.id);
                         }}
+                        {...selected === t.id ? { ref: selectedTransaction } : {}}
                         selected={t.id === selected}
                         {...t} />)}
             </ul>
