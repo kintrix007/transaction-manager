@@ -171,7 +171,7 @@ export default function TransactionList() {
             // However, this works for the sake of the demo.
             !editing
                 ?
-                <Popup title="Add new transaction ➕">
+                <Popup title="New transaction ➕">
                     <TransactionForm onSubmit={addTransaction} />
                 </Popup>
                 : null
