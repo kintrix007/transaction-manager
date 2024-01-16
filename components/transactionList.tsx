@@ -1,13 +1,13 @@
 "use client";
 
-import { RefObject, useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { Transaction, TransactionItem } from "./transaction";
 import { TransactionForm } from "./transactionForm";
 import { createClient } from "@/utils/supabase/client";
 import { Balance } from "./balance";
 import { Popup } from "./popup";
 
-function detectClickOutside(id: string, onClickOutside: () => void) {
+function useClickOutside(id: string, onClickOutside: () => void) {
     useEffect(() => {
         function handleClick(e: MouseEvent) {
             const element = document.getElementById(id);
@@ -34,10 +34,9 @@ export default function TransactionList() {
     const [loaded, setLoaded] = useState(false);
     const [editing, setEditing] = useState<Transaction | undefined>(undefined);
     const [selected, setSelected] = useState<Transaction["id"] | undefined>(undefined);
-    const selectedTransaction = useRef<HTMLElement | null>(null);
 
-    detectClickOutside("selected-transaction", () => {
-        setSelected(undefined)
+    useClickOutside("selected-transaction", () => {
+        setSelected(undefined);
     });
 
     useEffect(() => {
@@ -155,10 +154,6 @@ export default function TransactionList() {
         setTransactions(oldTransactions => {
             return oldTransactions.filter(t => t.id !== id);
         });
-    }
-
-    function selectTransaction(id: number | undefined) {
-        setSelected(id);
     }
 
     // I do realize working with floats is a terrible idea for precise values,
