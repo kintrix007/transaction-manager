@@ -11,11 +11,8 @@ function detectClickOutside(id: string, onClickOutside: () => void) {
     useEffect(() => {
         function handleClick(e: MouseEvent) {
             const element = document.getElementById(id);
-            console.log({ element });
-            console.log({ srcElement: e.srcElement });
-            console.log({ contains: element?.contains(e.srcElement as Node) });
 
-            if (element?.contains(e.srcElement as Node)) {
+            if (element?.contains(e.target as Node)) {
                 return;
             }
 
