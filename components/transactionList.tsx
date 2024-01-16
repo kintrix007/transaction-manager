@@ -197,7 +197,9 @@ export default function TransactionList() {
                     <TransactionItem key={t.id}
                         onSelect={() => {
                             setSelected(t.id);
-                            setEditing(undefined);
+                            if (t.id !== editing?.id) {
+                                setEditing(undefined);
+                            }
                         }}
                         onEdit={() => setEditing(!editing
                             ? transactions.find(t => t.id === selected)
