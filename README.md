@@ -7,7 +7,7 @@
   - Also add a "New" button that shows the popup for creating a new transaction
 - Make the app into a container for easy deployment
   - Not strictly necessary, but I wanna have a bit of Nix fun
-- I kinda wanna add options for sorting the transactions -- but alas, no time
+- I kinda wanna add options for sorting the transactions
 
 ## Set up Supabase
 
