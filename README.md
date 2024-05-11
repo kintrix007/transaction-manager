@@ -39,3 +39,9 @@ the result.
 This project uses
 [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to
 automatically optimize and load Inter, a custom Google Font.
+
+## Screenshots
+
+![Desktop Light Mode](public/screenshot1.png)
+![Desktop Dark Mode](public/screenshot2.png)
+![Mobile Dark Mode](public/screenshot3.png)
