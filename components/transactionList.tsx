@@ -94,9 +94,8 @@ export default function TransactionList() {
                         break;
                 }
             }
-        )
-        .subscribe();
-
+        );
+    channels.subscribe();
 
     async function addTransaction(transaction: Omit<Transaction, "id">) {
         const { data, error } = await supabase
