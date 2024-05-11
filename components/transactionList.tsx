@@ -157,7 +157,7 @@ export default function TransactionList() {
     }
 
     // I do realize working with floats is a terrible idea for precise values,
-    // especially when it comes when it comes to currencies.
+    // especially when it comes to currencies.
     // But at the same time, for this demo it is fine. 
     // (Might change my mind later)
     return <>
