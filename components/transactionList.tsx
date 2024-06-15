@@ -1,11 +1,12 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { Transaction, TransactionItem } from "./transaction";
 import { TransactionForm } from "./transactionForm";
 import { createClient } from "@/utils/supabase/client";
 import { Balance } from "./balance";
 import { Popup } from "./popup";
+import { RealtimeChannel, SupabaseClient } from "@supabase/supabase-js";
 
 function useClickOutside(id: string, onClickOutside: () => void) {
     useEffect(() => {
@@ -26,46 +27,11 @@ function useClickOutside(id: string, onClickOutside: () => void) {
     });
 }
 
-export default function TransactionList() {
-    const supabase = createClient();
-
-    const [transactions, setTransactions] = useState<Transaction[]>([]);
-    // In case we want to do something with it
-    const [loaded, setLoaded] = useState(false);
-    const [editing, setEditing] = useState<Transaction | undefined>(undefined);
-    const [selected, setSelected] = useState<Transaction["id"] | undefined>(undefined);
-
-    useClickOutside("selected-transaction", () => {
-        setSelected(undefined);
-    });
-
-    useEffect(() => {
-        (async () => {
-            let { data, error, status, statusText } = await supabase
-                .from("transactions")
-                .select();
-
-            if (error) {
-                // Crude, but gets the point across
-                alert(error.message);
-                return;
-            }
-
-            if (!status.toString().startsWith("2")) {
-                // Crude, but gets the point across
-                alert(`Error: ${status} ${statusText}`);
-                return;
-            }
-
-            const transactions = data!
-                .map(t => ({ ...t, date: new Date(t.date) })) ?? [];
-
-            setTransactions(transactions);
-            setLoaded(true);
-        })();
-    }, [supabase]);
-
-    const channels = supabase.channel("custom-all-channel")
+function supabaseUpdateChannel(
+    supabase: SupabaseClient,
+    setTransactions: Dispatch<SetStateAction<Transaction[]>>
+): RealtimeChannel {
+    return supabase.channel("custom-all-channel")
         .on(
             "postgres_changes",
             { event: "*", schema: "public", table: "transactions" },
@@ -92,9 +58,55 @@ export default function TransactionList() {
                             return oldTransactions.filter(t => t.id !== payload.old.id);
                         });
                         break;
+                    default:
+                        break;
                 }
             }
         );
+
+}
+
+export default function TransactionList() {
+    const supabase = createClient();
+
+    const [transactions, setTransactions] = useState<Transaction[]>([]);
+    // In case we want to do something with it
+    const [loaded, setLoaded] = useState(false);
+    const [editing, setEditing] = useState<Transaction | undefined>(undefined);
+    const [selected, setSelected] = useState<Transaction["id"] | undefined>(undefined);
+
+    useClickOutside("selected-transaction", () => {
+        setSelected(undefined);
+    });
+
+    useEffect(() => {
+        (async () => {
+            let { data, error, status, statusText } = await supabase
+                .from("transactions")
+                .select()
+                .order("date", { ascending: false });
+
+            if (error) {
+                // Crude, but gets the point across
+                alert(error.message);
+                return;
+            }
+
+            if (!status.toString().startsWith("2")) {
+                // Crude, but gets the point across
+                alert(`Error: ${status} ${statusText}`);
+                return;
+            }
+
+            const transactions = data!
+                .map(t => ({ ...t, date: new Date(t.date) })) ?? [];
+
+            setTransactions(transactions);
+            setLoaded(true);
+        })();
+    }, [supabase]);
+
+    const channels = supabaseUpdateChannel(supabase, setTransactions);
     channels.subscribe();
 
     async function addTransaction(transaction: Omit<Transaction, "id">) {
@@ -192,6 +204,20 @@ export default function TransactionList() {
         <div>
             <h2>Past transactions</h2>
             <ul>
+                {loaded
+                    ? null
+                    : <>
+                        <div><em>Loading...</em></div>
+                        <TransactionItem
+                            id={-1}
+                            amount={99.99}
+                            title={"Loading..."}
+                            description={null}
+                            date={new Date()}
+                        />
+                    </>
+                }
+
                 {transactions.map(t =>
                     <TransactionItem key={t.id}
                         onSelect={() => {

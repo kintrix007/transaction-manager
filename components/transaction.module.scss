@@ -77,6 +77,12 @@
     .leftSide {
         overflow-x: hidden;
 
+        .description {
+            font-style: italic;
+            font-size: smaller;
+            color: rgba(var(--foreground-rgb), 0.8);
+        }
+
         * {
             margin: 0.25em;
         }

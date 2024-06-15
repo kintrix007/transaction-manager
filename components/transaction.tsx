@@ -36,7 +36,7 @@ export function TransactionItem(
                     {descriptionText}
                 </div>
                 <div title={date.toDateString()} className={styles.date}>
-                    📅 {date.toLocaleDateString()}
+                    📅 {date.toDateString()}
                 </div>
             </div>
             <div className={styles.rightSide}>
