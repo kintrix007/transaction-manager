@@ -3,6 +3,12 @@
 # dev environment
 .direnv/
 
+# terraform
+.terraform/
+# Ideally should be stored remotely, like on Azure
+terraform.tfstate
+terraform.tfstate.*
+
 # dependencies
 /node_modules
 /.pnp

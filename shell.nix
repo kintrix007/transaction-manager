@@ -1,5 +1,5 @@
 let
-  url = "https://github.com/NixOS/nixpkgs/archive/08d0afbbdf91192d8753bca6c0f492bd58070400.tar.gz";
+  url = "https://github.com/NixOS/nixpkgs/archive/617eb5eea32297200e99166795e42c23a5389b1a.tar.gz";
 in
 { pkgs ? import (fetchTarball url) { } }:
 
@@ -7,7 +7,8 @@ pkgs.mkShell {
   nativeBuildInputs = with pkgs; [
     nodePackages.typescript-language-server
     supabase-cli
-    netlify-cli
+    terraform-ls
+    azure-cli
   ];
 
   buildInputs = with pkgs; [
